@@ -1,0 +1,4 @@
+disruption_id,supplier_id,sku_id,issue,severity,active
+D001,S008,SKU001,spot buy supplier under disruption after late deliveries,high,1
+D002,S004,SKU004,seafood route delays causing supply uncertainty,medium,1
+D003,S006,SKU005,international freight volatility,medium,1

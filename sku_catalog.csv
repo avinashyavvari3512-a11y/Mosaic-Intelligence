@@ -1,0 +1,13 @@
+sku_id,sku_name,category,substitution_group,unit,criticality
+SKU001,Chicken Breast,Protein,chicken_protein,kg,high
+SKU002,Turkey Strips,Protein,chicken_protein,kg,medium
+SKU003,Tofu Blocks,Protein,plant_protein,kg,medium
+SKU004,Salmon Fillets,Protein,seafood_protein,kg,high
+SKU005,Brown Rice,Grain,rice_grain,kg,medium
+SKU006,White Rice,Grain,rice_grain,kg,low
+SKU007,Broccoli,Produce,green_veg,kg,medium
+SKU008,Spinach,Produce,green_veg,kg,medium
+SKU009,Black Beans,Protein,plant_protein,kg,low
+SKU010,Whole Wheat Tortilla,Grain,tortilla_grain,kg,low
+SKU011,Greek Yogurt,Dairy,dairy,kg,medium
+SKU012,Cheddar Cheese,Dairy,dairy,kg,medium
