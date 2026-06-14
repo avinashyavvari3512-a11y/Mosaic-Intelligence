@@ -1,6 +1,10 @@
 import json
 import os
-from agent import MosaicSpendIntelligenceAgent
+
+try:
+    from .agent import MosaicSpendIntelligenceAgent
+except ImportError:  # Allows `python src/run_demo.py` from the project root.
+    from agent import MosaicSpendIntelligenceAgent
 
 
 def main():

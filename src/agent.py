@@ -12,22 +12,36 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Dict, Optional
+from typing import Dict
 
 import pandas as pd
 
-from tools import (
-    load_data,
-    enrich_purchase_orders,
-    spend_cube,
-    detect_price_variance,
-    detect_maverick_spend,
-    supplier_scorecard,
-    build_supplier_sku_graph,
-    single_source_skus,
-    recommend_alternates_for_sku,
-    calculate_savings_summary,
-)
+try:
+    from .tools import (
+        load_data,
+        enrich_purchase_orders,
+        spend_cube,
+        detect_price_variance,
+        detect_maverick_spend,
+        supplier_scorecard,
+        build_supplier_sku_graph,
+        single_source_skus,
+        recommend_alternates_for_sku,
+        calculate_savings_summary,
+    )
+except ImportError:  # Allows `python src/run_demo.py` from the project root.
+    from tools import (
+        load_data,
+        enrich_purchase_orders,
+        spend_cube,
+        detect_price_variance,
+        detect_maverick_spend,
+        supplier_scorecard,
+        build_supplier_sku_graph,
+        single_source_skus,
+        recommend_alternates_for_sku,
+        calculate_savings_summary,
+    )
 
 
 class MosaicSpendIntelligenceAgent:
@@ -84,6 +98,14 @@ class MosaicSpendIntelligenceAgent:
             df = df[df["location"] == constraints["location"]]
         return df
 
+    @staticmethod
+    def _top_records(df: pd.DataFrame, limit: int = 10, decimals: int = 3) -> list[Dict]:
+        """Return rounded records without applying numeric rounding to date columns."""
+        top = df.head(limit).copy()
+        numeric_columns = top.select_dtypes(include="number").columns
+        top[numeric_columns] = top[numeric_columns].round(decimals)
+        return top.to_dict("records")
+
     def run_tools(self, constraints: Dict) -> Dict:
         """Run deterministic tools and return trusted facts."""
         filtered = self.apply_constraints(constraints)
@@ -117,10 +139,10 @@ class MosaicSpendIntelligenceAgent:
 
         return {
             "savings_summary": savings,
-            "spend_cube_top10": cube.head(10).round(2).to_dict("records"),
-            "price_variance_top10": variance.head(10).round(3).to_dict("records"),
-            "maverick_spend_top10": maverick.head(10).round(3).to_dict("records"),
-            "supplier_scorecard_top10": scorecard.head(10).round(3).to_dict("records"),
+            "spend_cube_top10": self._top_records(cube, decimals=2),
+            "price_variance_top10": self._top_records(variance, decimals=3),
+            "maverick_spend_top10": self._top_records(maverick, decimals=3),
+            "supplier_scorecard_top10": self._top_records(scorecard, decimals=3),
             "single_source_skus": single_source[:10],
             "substitution_recommendations": substitutions,
         }

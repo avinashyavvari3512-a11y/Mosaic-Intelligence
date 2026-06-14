@@ -63,6 +63,7 @@ mosaic_spend_intelligence_genai_agent/
     disruptions.csv
     procurement_policy.md
   src/
+    __init__.py
     tools.py
     agent.py
     run_demo.py
@@ -70,6 +71,10 @@ mosaic_spend_intelligence_genai_agent/
     demo_recommendation.json
     demo_recommendation.md
   docs/
+    build_guide.pdf
+    mosaic_spend_intelligence_agent_build_guide.pdf
+  tests/
+    test_mosaic_agent.py
   README.md
   requirements.txt
 ```
@@ -154,6 +159,18 @@ The demo writes:
 ```text
 output/demo_recommendation.json
 output/demo_recommendation.md
+```
+
+You can also run the demo as a module:
+
+```bash
+python -m src.run_demo
+```
+
+## How to test
+
+```bash
+python -m unittest discover -s tests
 ```
 
 ## Example request

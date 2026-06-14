@@ -9,13 +9,29 @@ logic. The GenAI layer should explain these outputs, not invent metrics.
 from __future__ import annotations
 
 import os
-from typing import Dict, List, Optional
+from typing import Dict, List
 import pandas as pd
 import networkx as nx
 
 
 def load_data(data_dir: str = "data") -> Dict[str, pd.DataFrame]:
     """Load all synthetic procurement data tables."""
+    required_files = [
+        "purchase_orders.csv",
+        "suppliers.csv",
+        "sku_catalog.csv",
+        "contracts.csv",
+        "disruptions.csv",
+    ]
+    missing_files = [
+        filename
+        for filename in required_files
+        if not os.path.exists(os.path.join(data_dir, filename))
+    ]
+    if missing_files:
+        missing = ", ".join(missing_files)
+        raise FileNotFoundError(f"Missing required Mosaic data files in {data_dir}: {missing}")
+
     return {
         "purchase_orders": pd.read_csv(os.path.join(data_dir, "purchase_orders.csv"), parse_dates=["order_date"]),
         "suppliers": pd.read_csv(os.path.join(data_dir, "suppliers.csv"), keep_default_na=False),
