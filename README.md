@@ -67,6 +67,7 @@ mosaic_spend_intelligence_genai_agent/
     tools.py
     agent.py
     run_demo.py
+    live_agent.py
   output/
     demo_recommendation.json
     demo_recommendation.md
@@ -173,6 +174,43 @@ python -m src.run_demo
 python -m unittest discover -s tests
 ```
 
+## Live agent mode
+
+Run one live request and print the buyer-friendly recommendation:
+
+```bash
+python -m src.live_agent --once "Analyze Produce spend at Remote Campus E for risk and savings."
+```
+
+Start an interactive terminal session:
+
+```bash
+python -m src.live_agent
+```
+
+Start a local HTTP service:
+
+```bash
+python -m src.live_agent --serve --host 127.0.0.1 --port 8000
+```
+
+Then call the live agent:
+
+```bash
+curl -X POST http://127.0.0.1:8000/ask \
+  -H "Content-Type: application/json" \
+  -d '{"request": "Analyze Protein spend over 20% price variance and supplier risk."}'
+```
+
+Useful HTTP endpoints:
+
+- `GET /health`
+- `POST /ask` with JSON body `{"request": "...", "use_llm": false}`
+
+Add `--json` to print full result payloads in command-line mode. Add `--use-llm`
+to use the optional OpenAI narrative layer when `OPENAI_API_KEY` is configured.
+The deterministic procurement tools remain the source of truth.
+
 ## Example request
 
 ```text
@@ -222,6 +260,10 @@ Contains the MosaicSpendIntelligenceAgent class:
 
 ### src/run_demo.py
 Runs the demo request and writes output files.
+
+### src/live_agent.py
+Runs Mosaic as a live one-shot CLI, interactive terminal agent, or lightweight
+HTTP service with `GET /health` and `POST /ask`.
 
 ## How this becomes a real enterprise GenAI agent
 

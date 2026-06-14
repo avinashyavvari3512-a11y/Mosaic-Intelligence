@@ -1,8 +1,13 @@
 import tempfile
+import json
+import threading
 import unittest
+import urllib.request
+from http.server import ThreadingHTTPServer
 from pathlib import Path
 
 from src.agent import MosaicSpendIntelligenceAgent
+from src.live_agent import make_handler, run_live_request
 from src.tools import detect_price_variance, load_data, enrich_purchase_orders
 
 
@@ -66,6 +71,43 @@ class MosaicSpendIntelligenceTests(unittest.TestCase):
         )
         self.assertIn("synthetic procurement spend", result["operator_summary"])
         self.assertTrue(result["tool_results"]["substitution_recommendations"])
+
+    def test_live_request_rejects_empty_input(self):
+        agent = MosaicSpendIntelligenceAgent(data_dir=str(DATA_DIR))
+
+        with self.assertRaises(ValueError):
+            run_live_request(agent, "   ")
+
+    def test_http_ask_endpoint_returns_agent_result(self):
+        agent = MosaicSpendIntelligenceAgent(data_dir=str(DATA_DIR))
+        handler = make_handler(agent)
+        server = ThreadingHTTPServer(("127.0.0.1", 0), handler)
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+
+        try:
+            url = f"http://127.0.0.1:{server.server_port}/ask"
+            payload = json.dumps({"request": "Analyze Protein spend over 20% price variance."}).encode(
+                "utf-8"
+            )
+            request = urllib.request.Request(
+                url,
+                data=payload,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+
+            with urllib.request.urlopen(request, timeout=5) as response:
+                status = response.status
+                body = json.loads(response.read().decode("utf-8"))
+
+            self.assertEqual(status, 200)
+            self.assertEqual(body["status"], "success")
+            self.assertEqual(body["constraints"]["category"], "Protein")
+            self.assertIn("operator_summary", body)
+        finally:
+            server.shutdown()
+            server.server_close()
 
 
 if __name__ == "__main__":
