@@ -12,22 +12,36 @@ from __future__ import annotations
 import json
 import os
 import re
-from typing import Dict, Optional
+from typing import Dict
 
 import pandas as pd
 
-from tools import (
-    load_data,
-    enrich_purchase_orders,
-    spend_cube,
-    detect_price_variance,
-    detect_maverick_spend,
-    supplier_scorecard,
-    build_supplier_sku_graph,
-    single_source_skus,
-    recommend_alternates_for_sku,
-    calculate_savings_summary,
-)
+try:
+    from .tools import (
+        load_data,
+        enrich_purchase_orders,
+        spend_cube,
+        detect_price_variance,
+        detect_maverick_spend,
+        supplier_scorecard,
+        build_supplier_sku_graph,
+        single_source_skus,
+        recommend_alternates_for_sku,
+        calculate_savings_summary,
+    )
+except ImportError:  # Allows `python src/run_demo.py` from the project root.
+    from tools import (
+        load_data,
+        enrich_purchase_orders,
+        spend_cube,
+        detect_price_variance,
+        detect_maverick_spend,
+        supplier_scorecard,
+        build_supplier_sku_graph,
+        single_source_skus,
+        recommend_alternates_for_sku,
+        calculate_savings_summary,
+    )
 
 
 class MosaicSpendIntelligenceAgent:
